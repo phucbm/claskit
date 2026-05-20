@@ -1,6 +1,6 @@
 {
   "name": "claskit",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "Autonomous Claude Code task runner for spec-driven development",
   "author": {
     "name": "phucbm",
