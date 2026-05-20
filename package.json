@@ -1,5 +1,5 @@
 {
-  "name": "clask",
+  "name": "claskit",
   "version": "1.0.0",
   "description": "Autonomous Claude Code task runner for spec-driven development",
   "author": {
@@ -7,18 +7,18 @@
     "url": "https://github.com/phucbm"
   },
   "license": "MIT",
-  "homepage": "https://github.com/phucbm/clask#readme",
+  "homepage": "https://github.com/phucbm/claskit#readme",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/phucbm/clask.git"
+    "url": "git+https://github.com/phucbm/claskit.git"
   },
   "bugs": {
-    "url": "https://github.com/phucbm/clask/issues"
+    "url": "https://github.com/phucbm/claskit/issues"
   },
   "bin": {
-    "clask": "bin/clask.js"
+    "claskit": "bin/claskit.js"
   },
-  "main": "./bin/clask.js",
+  "main": "./bin/claskit.js",
   "files": [
     "bin/",
     "README.md",

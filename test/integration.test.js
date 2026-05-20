@@ -7,7 +7,7 @@ const os = require('node:os');
 const path = require('node:path');
 const { execSync, spawnSync } = require('node:child_process');
 
-const CLASK = path.resolve(__dirname, '..', 'bin', 'clask.js');
+const CLASK = path.resolve(__dirname, '..', 'bin', 'claskit.js');
 
 function run(args, cwd, { allowFail = false, stdin = null } = {}) {
   if (stdin !== null) {
@@ -36,13 +36,13 @@ function run(args, cwd, { allowFail = false, stdin = null } = {}) {
 }
 
 function makeTmp() {
-  const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'clask-int-'));
+  const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'claskit-int-'));
   fs.writeFileSync(path.join(dir, 'package.json'), '{"name":"test"}');
   return dir;
 }
 
 function makeBareDir() {
-  return fs.mkdtempSync(path.join(os.tmpdir(), 'clask-bare-'));
+  return fs.mkdtempSync(path.join(os.tmpdir(), 'claskit-bare-'));
 }
 
 // ─── project detection ───────────────────────────────────────────────────────
@@ -110,7 +110,7 @@ test('onboarding: y + y → creates folders and sample tasks', () => {
   const dir = makeTmp();
   run('', dir, { allowFail: true, stdin: 'y\ny\n' }); // y=init, y=sample tasks
   const files = fs.readdirSync(path.join(dir, '.claude/tasks/todo'));
-  const testFiles = files.filter(f => f.startsWith('clask-test-task-'));
+  const testFiles = files.filter(f => f.startsWith('claskit-test-task-'));
   assert.equal(testFiles.length, 2, `expected 2 sample tasks, got ${testFiles.length}`);
   fs.rmSync(dir, { recursive: true });
 });
@@ -137,7 +137,7 @@ test('--test: creates 2 test .md files in todo/', () => {
   run('--init', dir);
   run('--test', dir);
   const files = fs.readdirSync(path.join(dir, '.claude/tasks/todo'));
-  const testFiles = files.filter(f => f.startsWith('clask-test-task-'));
+  const testFiles = files.filter(f => f.startsWith('claskit-test-task-'));
   assert.equal(testFiles.length, 2, `expected 2 test tasks, got ${testFiles.length}`);
   fs.rmSync(dir, { recursive: true });
 });
@@ -147,7 +147,7 @@ test('--test: task files contain valid # headings', () => {
   run('--init', dir);
   run('--test', dir);
   const todoDir = path.join(dir, '.claude/tasks/todo');
-  const files = fs.readdirSync(todoDir).filter(f => f.startsWith('clask-test-task-'));
+  const files = fs.readdirSync(todoDir).filter(f => f.startsWith('claskit-test-task-'));
   files.forEach(f => {
     const content = fs.readFileSync(path.join(todoDir, f), 'utf8');
     assert.match(content, /^# .+/m, `${f} missing # heading`);
@@ -171,7 +171,7 @@ test('--clean-test: removes test files', () => {
   run('--test', dir);
   run('--clean-test', dir);
   const files = fs.readdirSync(path.join(dir, '.claude/tasks/todo'));
-  const testFiles = files.filter(f => f.startsWith('clask-test-task-'));
+  const testFiles = files.filter(f => f.startsWith('claskit-test-task-'));
   assert.equal(testFiles.length, 0, 'test files still present after clean');
   fs.rmSync(dir, { recursive: true });
 });

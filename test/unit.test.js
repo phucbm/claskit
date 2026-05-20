@@ -6,7 +6,7 @@ const fs = require('node:fs');
 const os = require('node:os');
 const path = require('node:path');
 
-const { pad, box, fmtDuration, taskTitle, buildPrompt } = require('../bin/clask.js');
+const { pad, box, fmtDuration, taskTitle, buildPrompt } = require('../bin/claskit.js');
 
 // ─── pad ─────────────────────────────────────────────────────────────────────
 
@@ -73,21 +73,21 @@ test('box: all lines same character count', () => {
 // ─── taskTitle ───────────────────────────────────────────────────────────────
 
 test('taskTitle: extracts # heading', () => {
-  const tmp = path.join(os.tmpdir(), `clask-test-${Date.now()}.md`);
+  const tmp = path.join(os.tmpdir(), `claskit-test-${Date.now()}.md`);
   fs.writeFileSync(tmp, '# My Task Title\n\nsome content');
   assert.equal(taskTitle(tmp), 'My Task Title');
   fs.unlinkSync(tmp);
 });
 
 test('taskTitle: heading with extra spaces', () => {
-  const tmp = path.join(os.tmpdir(), `clask-test-${Date.now()}.md`);
+  const tmp = path.join(os.tmpdir(), `claskit-test-${Date.now()}.md`);
   fs.writeFileSync(tmp, '#  Spaced Title  \n');
   assert.equal(taskTitle(tmp), 'Spaced Title');
   fs.unlinkSync(tmp);
 });
 
 test('taskTitle: file with no # heading falls back to filename', () => {
-  const tmp = path.join(os.tmpdir(), `clask-test-${Date.now()}.md`);
+  const tmp = path.join(os.tmpdir(), `claskit-test-${Date.now()}.md`);
   fs.writeFileSync(tmp, 'no heading here\njust content');
   const result = taskTitle(tmp);
   assert.equal(result, path.basename(tmp, '.md'));
@@ -100,7 +100,7 @@ test('taskTitle: nonexistent file falls back to filename', () => {
 });
 
 test('taskTitle: heading not on first line is still found', () => {
-  const tmp = path.join(os.tmpdir(), `clask-test-${Date.now()}.md`);
+  const tmp = path.join(os.tmpdir(), `claskit-test-${Date.now()}.md`);
   fs.writeFileSync(tmp, 'some preamble\n# Late Heading\ncontent');
   assert.equal(taskTitle(tmp), 'Late Heading');
   fs.unlinkSync(tmp);

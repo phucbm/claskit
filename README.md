@@ -1,6 +1,6 @@
-# clask
+# claskit
 
-Autonomous Claude Code task runner. Write task specs as Markdown, run `clask`, watch Claude implement them.
+Autonomous Claude Code task runner. Write task specs as Markdown, run `claskit`, watch Claude implement them.
 
 ```
   ┌──────────────────────────────────────────────────────────────────┐
@@ -13,7 +13,7 @@ Autonomous Claude Code task runner. Write task specs as Markdown, run `clask`, w
   │            │                             │                      │
   │            ▼                             │                      │
   │      ┌───────────┐                       │                      │
-  │      │   clask   │                       │                      │
+  │      │  claskit  │                       │                      │
   │      └─────┬─────┘                       │                      │
   │            │                             │                      │
   │     ┌──────┴──────┐                      │                      │
@@ -24,7 +24,7 @@ Autonomous Claude Code task runner. Write task specs as Markdown, run `clask`, w
   │     └──────┬───────┘                     │                      │
   │            ▼                             │                      │
   │   claude --dangerously-skip-permissions  │                      │
-  │   reads spec → verifies → ──────────────┘                      │
+  │   reads spec → verifies → ──────────────┘                       │
   │                                                                  │
   └──────────────────────────────────────────────────────────────────┘
 ```
@@ -37,25 +37,25 @@ Autonomous Claude Code task runner. Write task specs as Markdown, run `clask`, w
 ## Install
 
 ```bash
-pnpm add -g clask
+pnpm add -g claskit
 ```
 
 ## Quick start
 
 ```bash
-pnpm add -g clask
+pnpm add -g claskit
 ```
 
 ```bash
-clask
+claskit
 ```
 
-clask detects if the project is not set up and walks you through initialization interactively.
+claskit detects if the project is not set up and walks you through initialization interactively.
 
 ## Usage
 
 ```
-clask [flag]
+claskit [flag]
 ```
 
 | Flag | What it does |
@@ -74,7 +74,7 @@ clask [flag]
 
 ### Task picker
 
-When 2+ tasks are queued, clask asks which to run:
+When 2+ tasks are queued, claskit asks which to run:
 
 ```
 Select tasks:
@@ -123,10 +123,10 @@ Save as `.claude/tasks/todo/my-feature.md`.
 ## Project integration
 
 ```bash
-npm pkg set scripts.clask="clask"
+npm pkg set scripts.claskit="claskit"
 ```
 
-Then run with `npm run clask` / `pnpm clask` / `yarn clask`.
+Then run with `npm run claskit` / `pnpm claskit` / `yarn claskit`.
 
 ## License
 
