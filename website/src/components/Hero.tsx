@@ -36,10 +36,10 @@ export function Hero() {
           <div className="lg:col-span-7">
             <h1
               className="font-display text-ink leading-[0.88] mb-6"
-              style={{ fontSize: 'clamp(52px, 8vw, 108px)' }}
+              style={{ fontSize: 'clamp(52px, 5vw, 108px)' }}
             >
-              <span className="block">Claude works</span>
-              <span className="block">while you sleep.</span>
+              <span className="block">Claude awake</span>
+              <span className="block">while you're away.</span>
             </h1>
 
             <p
