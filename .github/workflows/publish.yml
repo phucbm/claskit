@@ -1,0 +1,27 @@
+name: Publish on Release
+
+on:
+  release:
+    types: [published]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  id-token: write
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          ref: main
+          token: ${{ secrets.GITHUB_TOKEN }}
+          fetch-depth: 0
+
+      - uses: phucbm/publish-npm-action@v1
+        with:
+          build-command: ''
+          test-command: 'npm test'
+          install-command: 'npm install'
+          output-dir: 'bin/'
