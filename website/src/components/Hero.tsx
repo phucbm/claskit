@@ -1,9 +1,6 @@
 import { useState } from 'react'
 import { GITHUB } from '../constants'
-import { en } from '../locales/en'
 import { TerminalPanel } from './TerminalPanel'
-
-const t = en.hero
 
 const HERO_LINES = [
   '$ claskit',
@@ -31,8 +28,6 @@ export function Hero() {
     setTimeout(() => setCopied(false), 1800)
   }
 
-  const headlineLines = t.headline.split('\n')
-
   return (
     <section id="hero" className="border-b-2 border-ink py-[60px] lg:py-[80px]">
       <div className="container">
@@ -43,20 +38,19 @@ export function Hero() {
               className="font-display text-ink leading-[0.88] mb-6"
               style={{ fontSize: 'clamp(52px, 8vw, 108px)' }}
             >
-              {headlineLines.map((line, i) => (
-                <span key={i} className="block">{line}</span>
-              ))}
+              <span className="block">Claude works</span>
+              <span className="block">while you sleep.</span>
             </h1>
 
             <p
               className="font-mono text-[14px] text-muted leading-relaxed mb-8 max-w-[480px]"
             >
-              {t.sub}
+              claskit schedules autonomous Claude Code runs from Markdown task specs. Session running out? Set a time, walk away. Come back to finished tasks.
             </p>
 
             {/* Badges */}
             <div className="flex flex-wrap gap-2 mb-8">
-              {[t.badgeNode, t.badgeDeps, t.badgeLicense, t.badgeNpm].map(b => (
+              {['Node 18+', 'Zero deps', 'MIT', 'npm'].map(b => (
                 <span
                   key={b}
                   className="text-[10px] font-bold tracking-[0.12em] uppercase border border-ink px-2 py-1"
@@ -72,7 +66,7 @@ export function Hero() {
                 onClick={copy}
                 className="font-mono text-[12px] font-bold tracking-[0.06em] bg-ink text-paper px-5 py-3 hover:bg-primary transition-colors duration-100 copy-btn"
               >
-                {copied ? '✓ copied!' : t.ctaInstall}
+                {copied ? '✓ copied!' : 'npm install -g claskit'}
               </button>
               <a
                 href={GITHUB}
@@ -80,7 +74,7 @@ export function Hero() {
                 rel="noreferrer"
                 className="font-mono text-[12px] font-bold tracking-[0.06em] border-2 border-ink px-5 py-3 hover:bg-ink hover:text-paper transition-colors duration-100"
               >
-                {t.ctaGithub} ↗
+                View on GitHub ↗
               </a>
             </div>
           </div>

@@ -1,16 +1,19 @@
-import { en } from '../locales/en'
-
-const t = en.features
+const items = [
+  { id: '01', title: 'Schedule for later', body: 'Session about to end? Pick a time. claskit waits, keeps your Mac awake, and fires Claude exactly when you say.' },
+  { id: '02', title: 'Spec-driven tasks', body: 'Write what needs doing in Markdown. claskit reads it, Claude implements it. No prompting, no hand-holding.' },
+  { id: '03', title: 'Zero permission prompts', body: 'Runs with --dangerously-skip-permissions. Claude works autonomously start to finish.' },
+  { id: '04', title: 'Acceptance criteria', body: 'Claude verifies checkboxes before marking a task done. No partial completions.' },
+  { id: '05', title: 'Dependency-aware', body: 'Claude reads task notes and figures out order. No manual sequencing needed.' },
+  { id: '06', title: 'Graceful failure', body: 'Stops on first error. Reports what broke. Nothing gets silently half-done.' },
+]
 
 export function Features() {
-  const items = t.items
-
   return (
     <section id="features" className="border-b-2 border-ink py-[72px]">
       <div className="container">
         <div className="mb-8">
           <span className="text-[11px] font-bold tracking-[0.15em] uppercase text-primary">
-            {t.sectionLabel}
+            Features
           </span>
         </div>
 

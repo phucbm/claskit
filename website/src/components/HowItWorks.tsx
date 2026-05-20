@@ -1,7 +1,55 @@
-import { en } from '../locales/en'
 import { TerminalPanel } from './TerminalPanel'
 
-const t = en.howItWorks
+const steps = [
+  {
+    number: '01',
+    title: 'Install',
+    terminal: [
+      '$ npm install -g claskit',
+      '',
+      '$ claskit --init',
+      '  ✓ Created .claude/tasks/todo/',
+      '  ✓ Created .claude/tasks/done/',
+      '  Add sample tasks? [y/n]: y',
+      '  ✓ 2 sample tasks created',
+    ],
+  },
+  {
+    number: '02',
+    title: 'Write a task spec',
+    terminal: [
+      '.claude/tasks/todo/refactor-api.md',
+      '─────────────────────────────────────',
+      '# Refactor API client',
+      '',
+      '## Task',
+      'Split the monolithic api.ts into',
+      'separate modules per endpoint.',
+      '',
+      '## Acceptance Criteria',
+      '- [ ] Each endpoint in its own file',
+      '- [ ] Original api.ts re-exports all',
+      '- [ ] All existing tests pass',
+    ],
+  },
+  {
+    number: '03',
+    title: 'Schedule and walk away',
+    terminal: [
+      '$ claskit',
+      '  Found 1 task.',
+      '  Run now or schedule? [now/HH:MM]: 23:00',
+      '',
+      '  ⏰ Scheduled for 23:00',
+      '  💡 caffeinate active — Mac stays awake',
+      '  Press Ctrl+C to cancel.',
+      '',
+      '  ... (2h 14m later) ...',
+      '  ► Launching Claude...',
+      '  ✓ refactor-api.md → done/',
+    ],
+  },
+]
 
 export function HowItWorks() {
   return (
@@ -9,12 +57,12 @@ export function HowItWorks() {
       <div className="container py-[72px]">
         <div className="mb-10">
           <span className="text-[11px] font-bold tracking-[0.15em] uppercase text-primary">
-            {t.sectionLabel}
+            How it works
           </span>
         </div>
       </div>
 
-      {t.steps.map((step, i) => {
+      {steps.map((step, i) => {
         const isEven = i % 2 === 1
         const isDark = isEven
 

@@ -1,8 +1,5 @@
 import { useState } from 'react'
 import { GITHUB, VERSION } from '../constants'
-import { en } from '../locales/en'
-
-const t = en.nav
 
 export function Nav() {
   const [open, setOpen] = useState(false)
@@ -30,9 +27,9 @@ export function Nav() {
         {/* Desktop nav */}
         <div className="hidden md:flex items-center gap-0">
           {[
-            { label: t.features, href: '#features' },
-            { label: t.howItWorks, href: '#how-it-works' },
-            { label: t.faq, href: '#faq' },
+            { label: 'Features', href: '#features' },
+            { label: 'How it works', href: '#how-it-works' },
+            { label: 'FAQ', href: '#faq' },
           ].map(({ label, href }) => (
             <a
               key={href}
@@ -46,7 +43,7 @@ export function Nav() {
             onClick={copy}
             className="ml-4 border-l border-ink/20 pl-4 text-[11px] font-bold tracking-[0.08em] bg-ink text-paper px-3 py-1.5 hover:bg-primary transition-colors duration-100 copy-btn"
           >
-            {copied ? '✓ copied' : t.install}
+            {copied ? '✓ copied' : 'npm install -g claskit'}
           </button>
         </div>
 
@@ -67,9 +64,9 @@ export function Nav() {
         <div className="absolute top-14 left-0 right-0 bg-paper border-b-2 border-ink md:hidden z-40">
           <div className="container py-4 flex flex-col gap-3">
             {[
-              { label: t.features, href: '#features' },
-              { label: t.howItWorks, href: '#how-it-works' },
-              { label: t.faq, href: '#faq' },
+              { label: 'Features', href: '#features' },
+              { label: 'How it works', href: '#how-it-works' },
+              { label: 'FAQ', href: '#faq' },
             ].map(({ label, href }) => (
               <a
                 key={href}
