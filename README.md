@@ -7,26 +7,26 @@ Autonomous Claude Code task runner. Write task specs as Markdown, run `claskit`,
 ```
   ┌──────────────────────────────────────────────────────────────────┐
   │                                                                  │
-  │   .claude/tasks/todo/           .claude/tasks/done/             │
-  │   ┌──────────────────┐          ┌──────────────────┐            │
-  │   │  feature-a.md    │          │  feature-a.md    │            │
-  │   │  feature-b.md    │          │                  │            │
-  │   └────────┬─────────┘          └────────▲─────────┘            │
-  │            │                             │                      │
-  │            ▼                             │                      │
-  │      ┌───────────┐                       │                      │
-  │      │  claskit  │                       │                      │
-  │      └─────┬─────┘                       │                      │
-  │            │                             │                      │
-  │     ┌──────┴──────┐                      │                      │
-  │     │             │                      │                      │
-  │  --now       --schedule              implements                 │
-  │     │        HH:MM ⏳                    │                      │
-  │     │             │                      │                      │
-  │     └──────┬───────┘                     │                      │
-  │            ▼                             │                      │
-  │   claude --dangerously-skip-permissions  │                      │
-  │   reads spec → verifies → ──────────────┘                       │
+  │   .claude/tasks/todo/           .claude/tasks/done/              │
+  │   ┌──────────────────┐          ┌──────────────────┐             │
+  │   │  feature-a.md    │          │  feature-a.md    │             │
+  │   │  feature-b.md    │          │                  │             │
+  │   └────────┬─────────┘          └────────▲─────────┘             │
+  │            │                             │                       │
+  │            ▼                             │                       │
+  │      ┌───────────┐                       │                       │
+  │      │  claskit  │                       │                       │
+  │      └─────┬─────┘                       │                       │
+  │            │                             │                       │
+  │     ┌──────┴──────┐                      │                       │
+  │     │             │                      │                       │
+  │  --now       --schedule              implements                  │
+  │     │        HH:MM ⏳                    │                       │
+  │     │             │                      │                       │
+  │     └──────┬───────┘                     │                       │
+  │            ▼                             │                       │
+  │   claude --dangerously-skip-permissions  │                       │
+  │   reads spec → verifies → ──────────────┘                        │
   │                                                                  │
   └──────────────────────────────────────────────────────────────────┘
 ```
@@ -54,7 +54,7 @@ claskit detects if the project is not set up and walks you through initializatio
 
 After brainstorming your plan with Claude, use this prompt to generate the spec file:
 
-```
+```text
 Fetch https://raw.githubusercontent.com/phucbm/claskit/main/SKILL.md and follow its instructions to create a task spec .md file.
 ```
 
