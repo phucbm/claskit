@@ -172,7 +172,7 @@ function fmtDuration(secs) {
 // stopAwake() is idempotent — safe to call multiple times.
 function countdown(totalSecs, label) {
   // Prevent machine sleep (macOS/Linux) for the duration of the schedule session
-  const caffeinate = process.platform !== 'win32'
+  const caffeinate = process.platform === 'darwin'
     ? spawn('caffeinate', ['-i'], { stdio: 'ignore', detached: false })
     : null;
   if (caffeinate) caffeinate.unref();
