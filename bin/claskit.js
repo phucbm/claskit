@@ -351,6 +351,13 @@ async function launchReal(tasks) {
 
 async function scheduleRun(tasks) {
   const selected = await pickTasks(tasks);
+
+  const confirmed = await confirmLaunch(selected.length);
+  if (!confirmed) {
+    console.log(`\n${C.dim}Aborted.${C.reset}`);
+    exit(0);
+  }
+
   const input = await ask(`  Enter time ${C.dim}(HH:MM, 24h)${C.reset}: `);
   if (!/^([01]\d|2[0-3]):[0-5]\d$/.test(input)) {
     console.log(`${C.red}Invalid format. Use HH:MM (e.g. 22:30)${C.reset}`);
@@ -368,12 +375,6 @@ async function scheduleRun(tasks) {
   console.log(`  ${C.dim}Press Ctrl+C to cancel${C.reset}\n`);
 
   await countdown(waitSecs, `Launching at ${input}`);
-
-  const confirmed = await confirmLaunch(selected.length);
-  if (!confirmed) {
-    console.log(`\n${C.dim}Aborted.${C.reset}`);
-    exit(0);
-  }
   launchClaude(buildPrompt(selected), 'autonomous mode');
 }
 
