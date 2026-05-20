@@ -5,11 +5,22 @@ const assert = require('node:assert/strict');
 const fs = require('node:fs');
 const os = require('node:os');
 const path = require('node:path');
-const { execSync } = require('node:child_process');
+const { execSync, spawnSync } = require('node:child_process');
 
 const CLASK = path.resolve(__dirname, '..', 'bin', 'clask.js');
 
-function run(args, cwd, { allowFail = false } = {}) {
+function run(args, cwd, { allowFail = false, stdin = null } = {}) {
+  if (stdin !== null) {
+    const result = spawnSync('node', [CLASK, ...args.split(' ').filter(Boolean)], {
+      cwd,
+      encoding: 'utf8',
+      input: stdin,
+      env: { ...process.env },
+    });
+    const stdout = (result.stdout || '') + (result.stderr || '');
+    if (!allowFail && result.status !== 0) throw new Error(stdout);
+    return { code: result.status ?? 0, stdout };
+  }
   try {
     const stdout = execSync(`node "${CLASK}" ${args}`, {
       cwd,
@@ -25,8 +36,23 @@ function run(args, cwd, { allowFail = false } = {}) {
 }
 
 function makeTmp() {
-  return fs.mkdtempSync(path.join(os.tmpdir(), 'clask-int-'));
+  const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'clask-int-'));
+  fs.writeFileSync(path.join(dir, 'package.json'), '{"name":"test"}');
+  return dir;
 }
+
+function makeBareDir() {
+  return fs.mkdtempSync(path.join(os.tmpdir(), 'clask-bare-'));
+}
+
+// ─── project detection ───────────────────────────────────────────────────────
+
+test('non-project dir: shows warning', () => {
+  const dir = makeBareDir(); // no .git, package.json, or .claude
+  const { stdout } = run('', dir, { allowFail: true });
+  assert.ok(stdout.includes('No project detected'), `warning missing, got: ${stdout}`);
+  fs.rmSync(dir, { recursive: true });
+});
 
 // ─── --init ──────────────────────────────────────────────────────────────────
 
@@ -56,13 +82,51 @@ test('--init: README.md contains "For AI assistants" section', () => {
   fs.rmSync(dir, { recursive: true });
 });
 
-// ─── no init ─────────────────────────────────────────────────────────────────
+// ─── onboarding flow ─────────────────────────────────────────────────────────
 
-test('no init: exits 1 with --init hint', () => {
+test('onboarding: shows "not set up" prompt', () => {
   const dir = makeTmp();
-  const { code, stdout } = run('', dir, { allowFail: true });
-  assert.equal(code, 1);
-  assert.ok(stdout.includes('clask --init'), `hint missing, got: ${stdout}`);
+  const { stdout } = run('', dir, { allowFail: true, stdin: 'n\n' });
+  assert.ok(stdout.includes('not set up'), `prompt missing, got: ${stdout}`);
+  fs.rmSync(dir, { recursive: true });
+});
+
+test('onboarding: n → exits without creating folders', () => {
+  const dir = makeTmp();
+  run('', dir, { allowFail: true, stdin: 'n\n' });
+  assert.ok(!fs.existsSync(path.join(dir, '.claude/tasks/todo')), 'todo/ should not exist');
+  fs.rmSync(dir, { recursive: true });
+});
+
+test('onboarding: y → creates folders', () => {
+  const dir = makeTmp();
+  run('', dir, { allowFail: true, stdin: 'y\nn\n' }); // y=init, n=no sample tasks
+  assert.ok(fs.existsSync(path.join(dir, '.claude/tasks/todo')), 'todo/ missing');
+  assert.ok(fs.existsSync(path.join(dir, '.claude/tasks/done')), 'done/ missing');
+  fs.rmSync(dir, { recursive: true });
+});
+
+test('onboarding: y + y → creates folders and sample tasks', () => {
+  const dir = makeTmp();
+  run('', dir, { allowFail: true, stdin: 'y\ny\n' }); // y=init, y=sample tasks
+  const files = fs.readdirSync(path.join(dir, '.claude/tasks/todo'));
+  const testFiles = files.filter(f => f.startsWith('clask-test-task-'));
+  assert.equal(testFiles.length, 2, `expected 2 sample tasks, got ${testFiles.length}`);
+  fs.rmSync(dir, { recursive: true });
+});
+
+test('onboarding: y + y → shows Ready message', () => {
+  const dir = makeTmp();
+  const { stdout } = run('', dir, { allowFail: true, stdin: 'y\ny\n' });
+  assert.ok(stdout.includes('Ready'), `ready message missing, got: ${stdout}`);
+  fs.rmSync(dir, { recursive: true });
+});
+
+test('onboarding: y + n → no sample tasks created', () => {
+  const dir = makeTmp();
+  run('', dir, { allowFail: true, stdin: 'y\nn\n' });
+  const files = fs.readdirSync(path.join(dir, '.claude/tasks/todo'));
+  assert.equal(files.length, 0, 'no tasks expected');
   fs.rmSync(dir, { recursive: true });
 });
 

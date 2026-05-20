@@ -194,20 +194,54 @@ function countdown(totalSecs, label) {
       clearInterval(timer);
       process.stdout.write('\r' + ' '.repeat(60) + '\r');
       console.log(`\n${C.red}Cancelled.${C.reset}`);
-      process.exit(0);
+      exit(0);
     });
   });
 }
 
 // ─── readline prompt helpers ─────────────────────────────────────────────────
+// Single rl instance with an event-driven queue so piped stdin lines
+// are buffered and consumed in order — even when lines arrive before ask() registers.
+
+const _lineQueue = [];
+let _lineWaiter = null;
+let _rl = null;
+
+function initRL() {
+  if (_rl) return;
+  _rl = readline.createInterface({ input: process.stdin, output: process.stdout, terminal: false });
+  _rl.on('line', line => {
+    const trimmed = line.trim();
+    if (_lineWaiter) {
+      const resolve = _lineWaiter;
+      _lineWaiter = null;
+      resolve(trimmed);
+    } else {
+      _lineQueue.push(trimmed);
+    }
+  });
+}
+
+function closeRL() {
+  if (_rl) { _rl.close(); _rl = null; }
+}
+
+function exit(code = 0) {
+  closeRL();
+  process.exit(code);
+}
 
 function ask(question) {
-  const rl = readline.createInterface({ input: process.stdin, output: process.stdout });
+  initRL();
+  process.stdout.write(question);
   return new Promise(resolve => {
-    rl.question(question, answer => {
-      rl.close();
-      resolve(answer.trim());
-    });
+    if (_lineQueue.length > 0) {
+      const line = _lineQueue.shift();
+      process.stdout.write(line + '\n');
+      resolve(line);
+    } else {
+      _lineWaiter = resolve;
+    }
   });
 }
 
@@ -235,7 +269,7 @@ async function pickTasks(tasks) {
 
   if (selected.length === 0) {
     console.log(`${C.red}No valid tasks selected.${C.reset}`);
-    process.exit(1);
+    exit(1);
   }
 
   console.log('');
@@ -308,7 +342,7 @@ async function launchReal(tasks) {
   const confirmed = await confirmLaunch(selected.length);
   if (!confirmed) {
     console.log(`\n${C.dim}Aborted.${C.reset}`);
-    process.exit(0);
+    exit(0);
   }
   launchClaude(buildPrompt(selected), 'autonomous mode');
 }
@@ -320,7 +354,7 @@ async function scheduleRun(tasks) {
   const input = await ask(`  Enter time ${C.dim}(HH:MM, 24h)${C.reset}: `);
   if (!/^([01]\d|2[0-3]):[0-5]\d$/.test(input)) {
     console.log(`${C.red}Invalid format. Use HH:MM (e.g. 22:30)${C.reset}`);
-    process.exit(1);
+    exit(1);
   }
 
   const [hh, mm] = input.split(':').map(Number);
@@ -338,7 +372,7 @@ async function scheduleRun(tasks) {
   const confirmed = await confirmLaunch(selected.length);
   if (!confirmed) {
     console.log(`\n${C.dim}Aborted.${C.reset}`);
-    process.exit(0);
+    exit(0);
   }
   launchClaude(buildPrompt(selected), 'autonomous mode');
 }
@@ -348,17 +382,46 @@ async function scheduleRun(tasks) {
 async function main() {
   const args = process.argv.slice(2);
 
+  // Guard: warn if not in a project directory
+  const looksLikeProject = fs.existsSync('.git') || fs.existsSync('package.json') || fs.existsSync('.claude');
+  if (!looksLikeProject) {
+    console.log('');
+    console.log(`${C.yellow}⚠  No project detected in ${process.cwd()}${C.reset}`);
+    console.log(`${C.dim}clask should be run from your project root, not ~/ or /${C.reset}`);
+    const ans = await ask(`  Continue anyway? ${C.dim}[y/N]${C.reset}: `);
+    if (ans.toLowerCase() !== 'y') { exit(0); }
+    console.log('');
+  }
+
   if (args.includes('--init')) {
     runInit();
     return;
   }
 
-  // Check todo dir — offer --init if missing
+  // Onboarding — interactive setup if not initialized
   if (!fs.existsSync(TODO_DIR)) {
     console.log('');
-    console.log(`${C.yellow}clask not initialized in this project.${C.reset}`);
-    console.log(`${C.dim}Run: clask --init${C.reset}`);
-    process.exit(1);
+    console.log(`${C.yellow}clask not set up in this project.${C.reset}`);
+    const doInit = await ask(`  Initialize now? ${C.dim}[Y/n]${C.reset}: `);
+    if (doInit.toLowerCase() === 'n') {
+      console.log(`\n${C.dim}Run: clask --init${C.reset}`);
+      exit(0);
+    }
+    runInit();
+    console.log('');
+    const doTest = await ask(`  Add sample tasks to try clask? ${C.dim}[Y/n]${C.reset}: `);
+    if (doTest.toLowerCase() !== 'n') {
+      const f1 = path.join(TODO_DIR, 'clask-test-task-1.md');
+      const f2 = path.join(TODO_DIR, 'clask-test-task-2.md');
+      fs.writeFileSync(f1, TEST_TASK_1);
+      fs.writeFileSync(f2, TEST_TASK_2);
+      console.log(`  ${C.green}✓${C.reset} Created 2 sample tasks in ${TODO_DIR}/`);
+    }
+    console.log('');
+    console.log(`${'─'.repeat(42)}`);
+    console.log(`  ${C.bold}Ready.${C.reset} Run: ${C.cyan}clask --now${C.reset}`);
+    console.log(`${'─'.repeat(42)}`);
+    exit(0);
   }
 
   // Scan tasks
@@ -413,7 +476,7 @@ async function main() {
 
   if (taskCount === 0) {
     console.log(`${C.yellow}No tasks found in ${TODO_DIR}${C.reset}`);
-    process.exit(0);
+    exit(0);
   }
 
   // List tasks
@@ -446,14 +509,14 @@ async function main() {
     case '3':
     default:
       console.log(`\n${C.dim}Bye.${C.reset}`);
-      process.exit(0);
+      exit(0);
   }
 }
 
 if (require.main === module) {
   main().catch(err => {
     console.error(`${C.red}${err.message}${C.reset}`);
-    process.exit(1);
+    exit(1);
   });
 }
 

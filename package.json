@@ -2,15 +2,42 @@
   "name": "clask",
   "version": "1.0.0",
   "description": "Autonomous Claude Code task runner for spec-driven development",
+  "author": {
+    "name": "phucbm",
+    "url": "https://github.com/phucbm"
+  },
+  "license": "MIT",
+  "homepage": "https://github.com/phucbm/clask#readme",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/phucbm/clask.git"
+  },
+  "bugs": {
+    "url": "https://github.com/phucbm/clask/issues"
+  },
   "bin": {
     "clask": "./bin/clask.js"
   },
+  "main": "./bin/clask.js",
+  "files": [
+    "bin/",
+    "README.md",
+    "LICENSE"
+  ],
   "engines": {
     "node": ">=18"
   },
   "scripts": {
     "test": "node --test test/*.test.js"
   },
-  "keywords": ["claude", "claude-code", "ai", "task-runner", "automation"],
-  "license": "MIT"
+  "keywords": [
+    "claude",
+    "claude-code",
+    "ai",
+    "task-runner",
+    "automation",
+    "cli",
+    "spec-driven",
+    "autonomous"
+  ]
 }
