@@ -45,14 +45,20 @@ pnpm add -g claskit
 ## Quick start
 
 ```bash
-pnpm add -g claskit
-```
-
-```bash
 claskit
 ```
 
 claskit detects if the project is not set up and walks you through initialization interactively.
+
+## Create a task spec with AI
+
+After brainstorming your plan with Claude, use this prompt to generate the spec file:
+
+```
+Fetch https://raw.githubusercontent.com/phucbm/claskit/main/SKILL.md and follow its instructions to create a task spec .md file.
+```
+
+Claude fetches the skill, reads your conversation context, and writes `.claude/tasks/todo/<slug>.md` automatically.
 
 ## Usage
 
