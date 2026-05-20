@@ -69,7 +69,7 @@ claskit [flag]
 ### Interactive menu options
 
 - **Now** — pick tasks and launch immediately
-- **Schedule (HH:MM)** — live countdown until target time, then launch
+- **Schedule (HH:MM)** — live countdown until target time, then launch; machine sleep is prevented for the entire session (countdown + Claude runtime) on macOS/Linux via `caffeinate`
 - **Exit**
 
 ### Task picker

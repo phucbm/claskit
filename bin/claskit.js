@@ -168,8 +168,24 @@ function fmtDuration(secs) {
 
 // ─── countdown ──────────────────────────────────────────────────────────────
 
+// Returns { promise, stopAwake } so callers can extend sleep prevention past countdown.
+// stopAwake() is idempotent — safe to call multiple times.
 function countdown(totalSecs, label) {
-  return new Promise((resolve) => {
+  // Prevent machine sleep (macOS/Linux) for the duration of the schedule session
+  const caffeinate = process.platform !== 'win32'
+    ? spawn('caffeinate', ['-i'], { stdio: 'ignore', detached: false })
+    : null;
+  if (caffeinate) caffeinate.unref();
+
+  let awakeStopped = false;
+  const stopAwake = () => {
+    if (!awakeStopped && caffeinate) {
+      awakeStopped = true;
+      caffeinate.kill();
+    }
+  };
+
+  const promise = new Promise((resolve) => {
     let remaining = totalSecs;
 
     const tick = () => {
@@ -192,11 +208,14 @@ function countdown(totalSecs, label) {
 
     process.on('SIGINT', () => {
       clearInterval(timer);
+      stopAwake();
       process.stdout.write('\r' + ' '.repeat(60) + '\r');
       console.log(`\n${C.red}Cancelled.${C.reset}`);
       exit(0);
     });
   });
+
+  return { promise, stopAwake };
 }
 
 // ─── readline prompt helpers ─────────────────────────────────────────────────
@@ -326,14 +345,17 @@ function launchClaude(prompt, label) {
   child.stdin.write(prompt + '\n');
   child.stdin.end();
 
-  child.on('exit', code => {
-    console.log(`\n${'─'.repeat(50)}`);
-    if (code !== 0) {
-      console.log(`${C.red}Claude exited with code ${code}${C.reset}`);
-      process.exit(code);
-    } else {
-      console.log(`${C.green}Claude finished successfully.${C.reset}`);
-    }
+  return new Promise((resolve) => {
+    child.on('exit', code => {
+      console.log(`\n${'─'.repeat(50)}`);
+      if (code !== 0) {
+        console.log(`${C.red}Claude exited with code ${code}${C.reset}`);
+        process.exit(code);
+      } else {
+        console.log(`${C.green}Claude finished successfully.${C.reset}`);
+      }
+      resolve();
+    });
   });
 }
 
@@ -344,7 +366,7 @@ async function launchReal(tasks) {
     console.log(`\n${C.dim}Aborted.${C.reset}`);
     exit(0);
   }
-  launchClaude(buildPrompt(selected), 'autonomous mode');
+  await launchClaude(buildPrompt(selected), 'autonomous mode');
 }
 
 // ─── schedule ────────────────────────────────────────────────────────────────
@@ -374,8 +396,10 @@ async function scheduleRun(tasks) {
   console.log(`\n  ${C.cyan}Scheduled for ${input}${C.reset} — ${fmtDuration(waitSecs)} from now`);
   console.log(`  ${C.dim}Press Ctrl+C to cancel${C.reset}\n`);
 
-  await countdown(waitSecs, `Launching at ${input}`);
-  launchClaude(buildPrompt(selected), 'autonomous mode');
+  const { promise, stopAwake } = countdown(waitSecs, `Launching at ${input}`);
+  await promise;
+  await launchClaude(buildPrompt(selected), 'autonomous mode');
+  stopAwake();
 }
 
 // ─── main ────────────────────────────────────────────────────────────────────
@@ -521,4 +545,4 @@ if (require.main === module) {
   });
 }
 
-module.exports = { pad, box, fmtDuration, taskTitle, buildPrompt };
+module.exports = { pad, box, fmtDuration, taskTitle, buildPrompt, countdown };

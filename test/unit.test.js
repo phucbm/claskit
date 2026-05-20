@@ -6,7 +6,7 @@ const fs = require('node:fs');
 const os = require('node:os');
 const path = require('node:path');
 
-const { pad, box, fmtDuration, taskTitle, buildPrompt } = require('../bin/claskit.js');
+const { pad, box, fmtDuration, taskTitle, buildPrompt, countdown } = require('../bin/claskit.js');
 
 // ─── pad ─────────────────────────────────────────────────────────────────────
 
@@ -129,4 +129,27 @@ test('buildPrompt: uses forward slashes even with backslash input', () => {
   const winPath = '.claude\\tasks\\todo\\task.md';
   const prompt = buildPrompt([winPath]);
   assert.ok(!prompt.includes('\\'), 'backslash found in prompt');
+});
+
+// ─── countdown ───────────────────────────────────────────────────────────────
+
+test('countdown: returns promise and stopAwake function', () => {
+  const result = countdown(0, 'test');
+  assert.ok(result && typeof result === 'object', 'should return object');
+  assert.ok(result.promise instanceof Promise, 'should have promise');
+  assert.ok(typeof result.stopAwake === 'function', 'should have stopAwake');
+  return result.promise.then(() => result.stopAwake());
+});
+
+test('countdown: stopAwake is idempotent (safe to call multiple times)', () => {
+  const { promise, stopAwake } = countdown(0, 'test');
+  return promise.then(() => {
+    assert.doesNotThrow(() => { stopAwake(); stopAwake(); stopAwake(); });
+  });
+});
+
+test('countdown: resolves after 0 seconds', async () => {
+  const { promise, stopAwake } = countdown(0, 'test');
+  await promise;
+  stopAwake();
 });
