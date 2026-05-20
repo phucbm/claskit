@@ -22,6 +22,6 @@ jobs:
       - uses: phucbm/publish-npm-action@v1
         with:
           build-command: ''
-          test-command: 'npm test'
-          install-command: 'npm install'
+          test-command: 'pnpm test'
+          install-command: 'pnpm install'
           output-dir: 'bin/'
