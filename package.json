@@ -10,13 +10,13 @@
   "homepage": "https://github.com/phucbm/clask#readme",
   "repository": {
     "type": "git",
-    "url": "https://github.com/phucbm/clask.git"
+    "url": "git+https://github.com/phucbm/clask.git"
   },
   "bugs": {
     "url": "https://github.com/phucbm/clask/issues"
   },
   "bin": {
-    "clask": "./bin/clask.js"
+    "clask": "bin/clask.js"
   },
   "main": "./bin/clask.js",
   "files": [
