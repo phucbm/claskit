@@ -1,5 +1,9 @@
 # claskit
 
+[![npm](https://img.shields.io/npm/v/claskit)](https://www.npmjs.com/package/claskit)
+[![Test](https://github.com/phucbm/claskit/actions/workflows/test.yml/badge.svg)](https://github.com/phucbm/claskit/actions/workflows/test.yml)
+[![GitHub release](https://img.shields.io/github/v/release/phucbm/claskit)](https://github.com/phucbm/claskit/releases/latest)
+
 **Website:** https://claskit.phucbm.com
 
 Autonomous Claude Code task runner. Write task specs as Markdown, run `claskit`, watch Claude implement them.
@@ -40,6 +44,12 @@ Autonomous Claude Code task runner. Write task specs as Markdown, run `claskit`,
 
 ```bash
 pnpm add -g claskit
+```
+
+**Claude Code skill** (context-aware guidance while you work):
+
+```bash
+npx skills add phucbm/skills
 ```
 
 ## Quick start
